@@ -210,6 +210,33 @@ To improve performance and fault tolerance, we added **lazy-loaded routes** and 
 > "We lazily loaded top-level routes using `React.lazy()` to reduce the main bundle size and improve initial load time. We wrapped them in a `Suspense` fallback for loading states and an `ErrorBoundary` for error resilience. This makes the app more performant and robust at runtime."
 
 
+### 🧪 Step 7: Testing and CI/CD Workflow
+
+We added a **unit test for `TaskItem`** and a **GitHub Actions CI workflow** to ensure quality and continuous delivery.
+
+#### ✅ What we did:
+- Installed `vitest`, `@testing-library/react`, and `jest-dom`
+- Wrote a simple test to check if `TaskItem` renders the correct title
+- Created a `.github/workflows/ci.yml` file to automate:
+  - Installing dependencies
+  - Running tests
+  - Running lint
+  - Building the app
+
+#### 🎯 Why:
+- Ensures our components work as expected with unit tests
+- Prevents broken code from being merged via CI pipeline
+- Maintains code quality and stability over time
+
+#### 🧠 Key Concepts:
+- Component testing with React Testing Library
+- CI/CD with GitHub Actions
+- Automating linting, testing, and building for production
+
+#### 🧪 Interview Insight:
+> "I added a GitHub Actions CI pipeline to automatically test and lint the code on push. I wrote a simple test for `TaskItem` using React Testing Library, ensuring it renders the correct content. This reflects my commitment to maintaining quality and catching issues early in the dev cycle."
+
+
 ## ⚡ `useMemo` – Optimizing Expensive Calculations in React
 
 `useMemo` is a performance optimization hook in React that **memoizes the result of a function** so that it’s only re-executed when its **dependencies change**. It helps avoid unnecessary recalculations on re-renders, especially for expensive operations.
