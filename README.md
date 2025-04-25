@@ -187,6 +187,29 @@ We added a UI for toggling task filters (`all`, `active`, `completed`) using **C
 > "We used Context for filter toggling to avoid Redux bloat for presentational state. Filters were applied in the view layer and memoized to prevent unnecessary computation. This separation ensures Redux remains focused on domain logic, while UI behavior is independently controlled."
 
 
+### 🔀 Step 6: Lazy Loading and Error Boundaries
+
+To improve performance and fault tolerance, we added **lazy-loaded routes** and an **ErrorBoundary** to catch rendering errors.
+
+#### ✅ What we did:
+- Used `React.lazy()` and `Suspense` to dynamically load route pages (`Dashboard`, `NotFound`)
+- Wrapped routes in a reusable `ErrorBoundary` component
+- Provided a loading fallback while routes are fetched
+
+#### 🎯 Why:
+- Lazy loading reduces initial bundle size, improving first load performance
+- Error boundaries prevent the app from crashing entirely due to component failures
+- Prepares the app for production use and large codebases
+
+#### 🧠 Key Concepts:
+- `React.lazy()` enables code-splitting for routes and components
+- `Suspense` shows fallback UI while lazy chunks load
+- `ErrorBoundary` is a class component that catches runtime errors in children
+
+#### 🧪 Interview Insight:
+> "We lazily loaded top-level routes using `React.lazy()` to reduce the main bundle size and improve initial load time. We wrapped them in a `Suspense` fallback for loading states and an `ErrorBoundary` for error resilience. This makes the app more performant and robust at runtime."
+
+
 ## ⚡ `useMemo` – Optimizing Expensive Calculations in React
 
 `useMemo` is a performance optimization hook in React that **memoizes the result of a function** so that it’s only re-executed when its **dependencies change**. It helps avoid unnecessary recalculations on re-renders, especially for expensive operations.
