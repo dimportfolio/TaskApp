@@ -68,25 +68,6 @@ src/
 
 ---
 
-### 📦 [To Revisit] Extracting Core UI as a Shared NPM Module
-
-> **Note:** The components in `src/core/components/`, along with design tokens and theming logic in `core/styles/`, have been architected for potential **extraction into a reusable npm package** (e.g., `@your-org/ui-lib`).
-
-This would allow:
-- Consistent UI/UX across multiple apps
-- Centralized updates via versioning
-- Cleaner codebases with reduced duplication
-
-> 🔁 **Next step (future):** Refactor `core/components` into a publishable module with `package.json`, docs, and semantic versioning. Consider using Storybook for isolated development and testing.
-
----
-
-✅ Let me know when you're ready to move on to wiring up the app routing and state providers. We're on track to deploy a production-quality app in under 2 hours — great momentum so far.
-
-
-Awesome — let’s move on to setting up **routing and global providers**. This will give us a clean entry point (`App.tsx`) and set the stage for lazy loading, error boundaries, and feature modules.
-
----
 
 ### 🧭 Step 2: Routing Setup and Global Entry Point
 
@@ -177,3 +158,124 @@ We built the two core components for rendering the Task dashboard:
 
 #### 🧪 Interview Insight:
 > "We consumed tasks from the Redux slice and filters from a local Context to keep UI behavior separate from domain state. This allowed us to apply display-specific logic without bloating the Redux slice. Components were memoized for performance, and designed in a reusable, testable way."
+
+### 🧰 Step 5: Filter UI + Performance Optimization
+
+We added a UI for toggling task filters (`all`, `active`, `completed`) using **Context API** and optimized task list rendering using **`useMemo()`**.
+
+| Component       | Role                                              |
+|-----------------|---------------------------------------------------|
+| `TaskFilters`   | UI buttons to update the filter state (Context)   |
+| `TaskList`      | Memoized filtered tasks for performance           |
+
+#### ✅ What we did:
+- Created `TaskFilters.tsx` with buttons for context-driven filter state
+- Used `useMemo()` in `TaskList.tsx` to avoid recalculating filters on every render
+- Integrated the filter UI into the `Dashboard` layout
+
+#### 🎯 Why:
+- Shows understanding of UI state separation from data state
+- Prevents unnecessary recalculations on large lists
+- Demonstrates component interaction via context
+
+#### 🧠 Key Concepts:
+- Context as a lightweight state manager for presentational logic
+- Memoization via `useMemo` for pure functions
+- Filter logic belongs in UI, not in Redux slice
+
+#### 🧪 Interview Insight:
+> "We used Context for filter toggling to avoid Redux bloat for presentational state. Filters were applied in the view layer and memoized to prevent unnecessary computation. This separation ensures Redux remains focused on domain logic, while UI behavior is independently controlled."
+
+
+## ⚡ `useMemo` – Optimizing Expensive Calculations in React
+
+`useMemo` is a performance optimization hook in React that **memoizes the result of a function** so that it’s only re-executed when its **dependencies change**. It helps avoid unnecessary recalculations on re-renders, especially for expensive operations.
+
+### 🔁 Basic Usage
+
+```tsx
+const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
+```
+
+- React caches the return value of the function
+- The function is only re-executed if any dependency (`a` or `b`) changes
+- Dependencies are checked using **reference equality (`===`)**
+
+---
+
+### ✅ How We Used `useMemo` in TaskZen
+
+In `TaskList`, we filtered tasks from Redux based on a filter from Context. We used `useMemo` to avoid re-filtering on every render:
+
+```tsx
+const filteredTasks = useMemo(() => {
+  return tasks.filter(task => {
+    if (filter === 'active') return !task.completed;
+    if (filter === 'completed') return task.completed;
+    return true;
+  });
+}, [tasks, filter]);
+```
+
+- `tasks`: comes from global Redux state
+- `filter`: comes from local Context UI state
+- `filteredTasks` is only recomputed when either dependency changes
+
+---
+
+### 🧠 What `useMemo` Tracks
+
+| Tracked Element             | How it works                        |
+|-----------------------------|-------------------------------------|
+| `tasks`                     | React tracks its reference (`===`)  |
+| `filter`                    | Tracked by primitive value          |
+| Return value (filtered list)| ✅ Cached if deps haven’t changed   |
+| Function internals          | ❌ Not tracked                      |
+
+> Note: React does **not** do deep comparisons of objects. If the `tasks` array is new (even if content is the same), the function re-runs.
+
+---
+
+### 🛠️ Common Use Cases for `useMemo`
+
+| Use Case                          | Why It Helps                           |
+|-----------------------------------|----------------------------------------|
+| Filtering/sorting large arrays    | Avoid re-running logic unnecessarily   |
+| Derived props or computed values  | Keeps views performant and clean       |
+| Conditional rendering logic       | Reduce JSX tree creation on re-renders |
+| Memoizing styles or objects       | Prevent unnecessary child renders      |
+
+---
+
+### 🚫 When Not to Use
+
+Avoid using `useMemo`:
+- On trivial calculations
+- When dependencies always change anyway
+- Just for the sake of it — premature optimization can reduce clarity
+
+---
+
+### 🧪 Interview Insight
+
+> "`useMemo` helps prevent expensive recalculations by caching a function’s return value. It tracks dependencies using reference equality and only recomputes when necessary. In our app, we used it to memoize filtered tasks based on Redux state and Context-based filters, which significantly improved render performance."
+
+## 📦 [To Revisit] Extracting Core UI as a Shared NPM Module
+
+> **Note:** The components in `src/core/components/`, along with design tokens and theming logic in `core/styles/`, have been architected for potential **extraction into a reusable npm package** (e.g., `@your-org/ui-lib`).
+
+This would allow:
+- Consistent UI/UX across multiple apps
+- Centralized updates via versioning
+- Cleaner codebases with reduced duplication
+
+> 🔁 **Next step (future):** Refactor `core/components` into a publishable module with `package.json`, docs, and semantic versioning. Consider using Storybook for isolated development and testing.
+
+---
+
+✅ Let me know when you're ready to move on to wiring up the app routing and state providers. We're on track to deploy a production-quality app in under 2 hours — great momentum so far.
+
+
+Awesome — let’s move on to setting up **routing and global providers**. This will give us a clean entry point (`App.tsx`) and set the stage for lazy loading, error boundaries, and feature modules.
+
+---
